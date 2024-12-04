@@ -12,8 +12,8 @@ from problem_config import get_problem  # Import the problem configuration
 from XAI import processData
 
 # Initialize configurable parameters
-pop_size = 30  # Population size
-n_gen = 30  # Number of generations
+pop_size = 50  # Population size
+n_gen = 50  # Number of generations
 
 
 class LogCallback(Callback):
@@ -92,11 +92,11 @@ def save_to_csv(data, algorithm_name, iteration):
 
 
 def main():
-    problem_name = "Ackley"  # Change this to "G1", "G2", etc., as needed
+    problem_name = "Schwefel"  # Change this to "G1", "G2", etc., as needed
     # Initial problem setup
-    lb = mainlb = np.array([0]*10, dtype=float)
-    ub = mainub =  np.array([1]*10, dtype=float)  # Start with default bounds for the problem
-    max_iterations = 5  # Number of times to run the process
+    lb = mainlb = np.array([-500]*10, dtype=float)
+    ub = mainub =  np.array([500]*10, dtype=float)  # Start with default bounds for the problem
+    max_iterations = 2  # Number of times to run the process
     csv_path =  "C:\\Users\\vyshn\\OneDrive\\Desktop\\append_log_GA_.csv"
 
     combined_best_fitness = {}
@@ -157,10 +157,10 @@ def main():
 def update_bounds(feature_dict, lb, ub, main_lb, main_ub):
     for feature, value in feature_dict.items():
         if value < 0:  # Negative value: Increase lower bound by |value|%
-            increment = (abs(value)/10) * lb[feature]
+            increment = abs((value)/10 * lb[feature])
             new_lb = lb[feature] + increment
             # Check if the new lb exceeds the main upper bound
-            if new_lb <= main_ub[feature]:
+            if new_lb <= main_ub[feature] and new_lb > main_lb[feature]:
                 lb[feature] = new_lb
             # Otherwise, keep the old value
         elif value > 0:  # Positive value: Decrease upper bound by |value|%
