@@ -1,10 +1,16 @@
-from pymoo.problems.single import Ackley, G1, G2
+from pymoo.problems.single import Ackley, G1, G2, Schwefel
 import numpy as np
 
 #from my_custom_problem import MyCustomProblem  # Import your custom problem class
 def get_problem(problem_name, lb, ub):
     if problem_name == "Ackley":
         problem = Ackley()
+        problem.n_var = 10
+        problem.xl = lb
+        problem.xu = ub
+
+    elif problem_name == "Schwefel":
+        problem = Schwefel()
         problem.n_var = 10
         problem.xl = lb
         problem.xu = ub

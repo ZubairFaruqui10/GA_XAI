@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 
 def plot_fitness(
-    min_fitness,best, lb, ub, iteration, save_dir="C:/Users/vyshn/PycharmProjects/EA-XAI/GA_XAI_plots",
+    min_fitness,best, lb, ub, iteration, n_gen, save_dir="C:/Users/vyshn/PycharmProjects/EA-XAI/GA_XAI_plots",
 ):
     """
     Plots fitness graphs for each run separately and also combines sequential fitness across all runs.
@@ -13,7 +13,7 @@ def plot_fitness(
     plt.figure(figsize=(10, 6))
     for algorithm_name, fitness_values in min_fitness.items():
         plt.plot(
-            list(range(1, 101)),
+            list(range(1, n_gen+1)),
             fitness_values,
             label=f"Run {iteration} - Best Fitness",
             color="blue"
@@ -39,7 +39,7 @@ def plot_fitness(
 
 
 
-def plot_combined_fitness(combined_data):
+def plot_combined_fitness(combined_data, n_gen):
     """
     Combines sequential fitness data across all runs into a single plot for comparison,
     with each run's fitness plotted in a separate color but the same generation range (1 to 100).
@@ -49,7 +49,7 @@ def plot_combined_fitness(combined_data):
 
     # Loop over each run
     for iteration, fitness_values in combined_data.items():
-        x_values = list(range(1, 101))  # x-values for generations (1 to 100 for each run)
+        x_values = list(range(1, n_gen+1))  # x-values for generations (1 to 100 for each run)
 
         # Plot the fitness values for each run, but all on the same x-axis (1 to 100)
         plt.plot(x_values, fitness_values, label=f"Run {iteration}", color=colors[iteration % len(colors)])
