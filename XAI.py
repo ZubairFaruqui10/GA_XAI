@@ -28,8 +28,8 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
     # Split data into training and testing sets
     X_train, X_test, y_train_reg, y_test_reg = train_test_split(X, y_reg, test_size=0.2, random_state=42)
     _, _, y_train_class, y_test_class = train_test_split(X, y_class, test_size=0.2, random_state=42)
-    #%%
-    """
+
+
     # Filter rows where Column B equals 1
     filtered_df = data[data['Satisfied Constraints'] == 9]
 
@@ -46,8 +46,8 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
 
     # Transform the solution value as you did for X
     best_sol__X = np.array([float(i.strip("[]")) for i in min_row_solution_value.split(',')])
-    """
-    #%%
+
+
     num_features = X_train.shape[1]
 
     # Calculate correlations
@@ -65,7 +65,7 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
     plt.ylabel('Correlation with Fitness')
     plt.title('Features vs-Fitness Correlation')
     plt.savefig(os.path.join(output_directory, f"Features vs-Fitness Correlation{iteration}.png"), dpi=300)
-    #plt.show()
+    plt.show()
     #%%
     plt.bar(range(num_features), class_correlations)
     plt.xlabel('Feature Index')
@@ -91,8 +91,8 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
     mse = mean_squared_error(y_test_reg, y_pred_reg)
     accuracy = accuracy_score(y_test_class, y_pred_class)
 
-    # print(f"Regression MSE: {mse}")
-    # print(f"Classification Accuracy: {accuracy}")
+    print(f"Regression MSE: {mse}")
+    print(f"Classification Accuracy: {accuracy}")
 
     #%%
     from lime import lime_tabular
@@ -122,9 +122,9 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
         return dict(exp.as_list())
     #%%
     # Test with a sample and store importance scores
-    #sample = X_test[0]
-    # best_sol_score_reg = get_feature_importance_lime(limeRegressionExplainer, regressor, best_sol__X)
-    # best_sol_score_class = get_feature_importance_lime(limeClassifierExplainer, classifier, best_sol__X)
+    sample = X_test[0]
+    best_sol_score_reg = get_feature_importance_lime(limeRegressionExplainer, regressor, best_sol__X)
+    best_sol_score_class = get_feature_importance_lime(limeClassifierExplainer, classifier, best_sol__X)
     #%%
     import re
     def extractFeatureNameFromLimeScoreRange(featureNameWithScoreRange):
@@ -173,12 +173,12 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
             reg_lime_score = np.vstack((reg_lime_score, sortedByKey_reg_scores[1]))
 
         # for classify
-        #clas_scores = get_feature_importance_lime(limeClassifierExplainer, classifier, x)
-        #sortedByKey_clas_scores = sortAsLimeExpAsNumpyAr (clas_scores)
-        #if( class_lime_score is None):
-           # class_lime_score = sortedByKey_clas_scores
-        #else:
-           # class_lime_score = np.vstack((class_lime_score, sortedByKey_clas_scores[1]))
+        clas_scores = get_feature_importance_lime(limeClassifierExplainer, classifier, x)
+        sortedByKey_clas_scores = sortAsLimeExpAsNumpyAr (clas_scores)
+        if( class_lime_score is None):
+           class_lime_score = sortedByKey_clas_scores
+        else:
+           class_lime_score = np.vstack((class_lime_score, sortedByKey_clas_scores[1]))
     #%%
     def plotScores(features, reg_values, class_values, title):
         fig, ax = plt.subplots(1, 2, figsize=(50, 20))
@@ -198,26 +198,24 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
         ax[1].tick_params(axis='y', labelsize=20)  # Y-axis label font size
         plt.tight_layout()
         plt.savefig(os.path.join(output_directory, title), dpi=300)
-        #plt.show()
-    #%%
-    #Sort by Feature name: Feature Importance using LIME for Best solution
-    # score_reg = sortAsLimeExpAsNumpyAr(best_sol_score_reg)
-    # score_class = sortAsLimeExpAsNumpyAr(best_sol_score_class)
-    #
-    # features = list(score_reg[0])
-    # reg_score_values = score_reg[1].astype(float)  # Exclude first row and convert to float
-    # class_score_values = score_class[1].astype(float)  # Exclude first row and convert to float
-    #
-    # plotScores(features, reg_score_values, class_score_values, "Sort by Feature name: Feature Scores using LIME for Best solution" )
+        plt.show()
 
-    #%%
+    # Sort by Feature name: Feature Importance using LIME for Best solution
+    score_reg = sortAsLimeExpAsNumpyAr(best_sol_score_reg)
+    score_class = sortAsLimeExpAsNumpyAr(best_sol_score_class)
 
-    #%%
-    # features = best_sol_score_reg.keys()
-    # reg_score_values = best_sol_score_reg.values()  # Exclude first row and convert to float
-    # class_score_values = best_sol_score_class.values()  # Exclude first row and convert to float
-    # plotScores(features, reg_score_values, class_score_values, "Sort by Feature score: Feature Score using LIME for Best solution" )
-    #%%
+    features = list(score_reg[0])
+    reg_score_values = score_reg[1].astype(float)  # Exclude first row and convert to float
+    class_score_values = score_class[1].astype(float)  # Exclude first row and convert to float
+
+    plotScores(features, reg_score_values, class_score_values, "Sort by Feature name: Feature Scores using LIME for Best solution" )
+
+
+    features = best_sol_score_reg.keys()
+    reg_score_values = best_sol_score_reg.values()  # Exclude first row and convert to float
+    class_score_values = best_sol_score_class.values()  # Exclude first row and convert to float
+    plotScores(features, reg_score_values, class_score_values, "Sort by Feature score: Feature Score using LIME for Best solution" )
+
     from scipy.stats import rankdata
 
     def findRankByFeature(data):
@@ -231,9 +229,9 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
         return sorted_feature_avg_rank
 
     reg_ranks = findRankByFeature(reg_lime_score)
-    #class_ranks = findRankByFeature(class_lime_score)
+    class_ranks = findRankByFeature(class_lime_score)
 
-    #plotScores(reg_ranks.keys(), reg_ranks.values(), class_ranks.values(), "Sort by Feature RANKs: Avg on all train data" )
+    plotScores(reg_ranks.keys(), reg_ranks.values(), class_ranks.values(), "Sort by Feature RANKs: Avg on all train data" )
     #%%
     def findTopKFeatures(reg_ranks, k):
         keys = [int( key.split("_")[-1]) for key in reg_ranks.keys()]
@@ -248,69 +246,69 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
     print(ans)
     # returning top k features with corelation values. not proecessing the below shap codes
     return ans
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    def plot_reg_class_score(reg_score_matrix, class_score_matrix, title, isBarChart=True):
+        plt.figure(figsize=(10, 6))
+
+        features = list(reg_score_matrix[0])
+
+        reg_data_values = reg_score_matrix[1:].astype(float)  # Exclude first row and convert to float
+
+        reg_score_averages = np.mean(reg_data_values, axis=0)
+
+        if(isBarChart is False):
+            plt.plot(features, reg_score_averages, marker='o', color='blue', linestyle='-', linewidth=1, markersize=5, label='Fitness')
+        else:
+            plt.bar(features, reg_score_averages, color='blue', label='Fitness')
+
+        class_data_values = class_score_matrix[1:].astype(float)  # Exclude first row and convert to float
+        class_score_averages = np.mean(class_data_values, axis=0)
+        if(isBarChart is False):
+            plt.plot(features, class_score_averages, marker='x', color='red', linestyle='-', linewidth=1, markersize=5, label='CV')
+        else:
+            plt.bar(features, class_score_averages, color='red', label='CV')
+
+
+        plt.xlabel("Features")
+        plt.ylabel("Importance Score")
+        plt.title(f"Feature Importance using LIME for {title}")
+        plt.xticks(rotation=45)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+    # Plot feature importance
+    plot_reg_class_score(reg_lime_score, class_lime_score, "Avg Feature Scores", True)
+
     #%%
-    # import matplotlib.pyplot as plt
-    # import numpy as np
-    #
-    # def plot_reg_class_score(reg_score_matrix, class_score_matrix, title, isBarChart=True):
-    #     plt.figure(figsize=(10, 6))
-    #
-    #     features = list(reg_score_matrix[0])
-    #
-    #     reg_data_values = reg_score_matrix[1:].astype(float)  # Exclude first row and convert to float
-    #
-    #     reg_score_averages = np.mean(reg_data_values, axis=0)
-    #
-    #     if(isBarChart is False):
-    #         plt.plot(features, reg_score_averages, marker='o', color='blue', linestyle='-', linewidth=1, markersize=5, label='Fitness')
-    #     else:
-    #         plt.bar(features, reg_score_averages, color='blue', label='Fitness')
-    #
-    #     class_data_values = class_score_matrix[1:].astype(float)  # Exclude first row and convert to float
-    #     class_score_averages = np.mean(class_data_values, axis=0)
-    #     if(isBarChart is False):
-    #         plt.plot(features, class_score_averages, marker='x', color='red', linestyle='-', linewidth=1, markersize=5, label='CV')
-    #     else:
-    #         plt.bar(features, class_score_averages, color='red', label='CV')
-    #
-    #
-    #     plt.xlabel("Features")
-    #     plt.ylabel("Importance Score")
-    #     plt.title(f"Feature Importance using LIME for {title}")
-    #     plt.xticks(rotation=45)
-    #     plt.legend()
-    #     plt.tight_layout()
-    #     plt.show()
-    #
-    # # Plot feature importance
-    # plot_reg_class_score(reg_lime_score, class_lime_score, "Avg Feature Scores", True)
-    #
-    # #%%
-    # import shap
-    # # Initialize SHAP Explainer
-    # reg_explainer = shap.Explainer(regressor, X_train)
-    # reg_shap_values = reg_explainer(X_test)
-    # #%%
-    # # tree_class_explainer = shap.TreeExplainer(classifier)
-    # # tree_class_shap_values = tree_class_explainer(X_test)
-    # #%%
-    # # Sample K representative background samples
-    # background_data = shap.sample(X_train, 100)  # For example, 100 samples
-    #
-    # # Initialize KernelExplainer with the sampled background data
-    # kernel_class_explainer = shap.KernelExplainer(classifier.predict_proba, background_data)
-    #
-    # kernel_class_explainer = shap.KernelExplainer(classifier.predict_proba, background_data)
-    # kernel_class_shap_values = kernel_class_explainer. shap_values(X_test)
-    # #%%
-    # shap.initjs()
-    # shap.force_plot(kernel_class_explainer.expected_value[0], kernel_class_shap_values[..., 0], X_test)
-    # #%%
-    #
-    # # Plot SHAP values summary for all test set (global explanation)
-    # shap.plots.beeswarm(reg_shap_values, max_display = 13, show = False)
-    # print(plt.axis())
-    #
-    # plt.show()
+    import shap
+    # Initialize SHAP Explainer
+    reg_explainer = shap.Explainer(regressor, X_train)
+    reg_shap_values = reg_explainer(X_test)
+    #%%
+    # tree_class_explainer = shap.TreeExplainer(classifier)
+    # tree_class_shap_values = tree_class_explainer(X_test)
+    #%%
+    # Sample K representative background samples
+    background_data = shap.sample(X_train, 100)  # For example, 100 samples
 
+    # Initialize KernelExplainer with the sampled background data
+    kernel_class_explainer = shap.KernelExplainer(classifier.predict_proba, background_data)
 
+    kernel_class_explainer = shap.KernelExplainer(classifier.predict_proba, background_data)
+    kernel_class_shap_values = kernel_class_explainer. shap_values(X_test)
+    #%%
+    shap.initjs()
+    shap.force_plot(kernel_class_explainer.expected_value[0], kernel_class_shap_values[..., 0], X_test)
+    #%%
+
+    # Plot SHAP values summary for all test set (global explanation)
+    shap.plots.beeswarm(reg_shap_values, max_display = 13, show = False)
+    print(plt.axis())
+
+    plt.show()
+
+processData('/home/zubair/Downloads/optimization_log 1.csv', 1)

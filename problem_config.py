@@ -1,4 +1,4 @@
-from pymoo.problems.single import Ackley,Zakharov, G1, G2, Schwefel, Rosenbrock,Rastrigin, Himmelblau, Sphere, Griewank
+from     pymoo.problems.single import Ackley,Zakharov, G1, G2, Schwefel, Rosenbrock,Rastrigin, Himmelblau, Sphere, Griewank
 import numpy as np
 
 
