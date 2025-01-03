@@ -12,7 +12,7 @@ from problem_config import get_problem  # Import the problem configuration
 from XAI import processData
 
 # Initialize configurable parameters
-pop_size = 50  # Population size
+pop_size = 50 # Population size
 n_gen = 50  # Number of generations
 
 
@@ -36,6 +36,7 @@ class LogCallback(Callback):
                 "Constraints": constraints[i].tolist(),  # Convert rounded array to list
                 "Satisfied Constraints": int(np.sum(constraints[i] <= 0)),  # Count satisfied constraints
             })
+
 
 # Function to perform optimization with a specified algorithm
 def run_optimization(algorithm_name, algorithm, problem):
@@ -90,14 +91,13 @@ def save_to_csv(data, algorithm_name, iteration):
     print(f"Data has been saved to {file_name}")
 
 
-
 def main():
-    problem_name = "Schwefel"  # Change this to "G1", "G2", etc., as needed
+    problem_name = "Zakharov"  # Change this to "G1", "G2", etc., as needed
     # Initial problem setup
-    lb = mainlb = np.array([-500]*10, dtype=float)
-    ub = mainub =  np.array([500]*10, dtype=float)  # Start with default bounds for the problem
-    max_iterations = 2  # Number of times to run the process
-    csv_path =  "C:\\Users\\vyshn\\OneDrive\\Desktop\\append_log_GA_.csv"
+    lb = mainlb = np.array([-10] * 10, dtype=float)
+    ub = mainub = np.array([10] * 10, dtype=float)    # Start with default bounds for the problem
+    max_iterations = 5  # Number of times to run the process
+    csv_path = "C:\\Users\\vyshn\\OneDrive\\Desktop\\append_log_GA_.csv"
 
     combined_best_fitness = {}
     for iteration in range(max_iterations):
@@ -146,25 +146,26 @@ def main():
 
         # Use the generated CSV to get recommendations for updating bounds
         print(f"Processing CSV data from {csv_path} for iteration {iteration + 1}...")
-        topKFeatureDictionary = processData(csv_path)
+        topKFeatureDictionary = processData(csv_path, iteration)
 
         # Update bounds based on the dictionary
-        lb, ub = update_bounds(topKFeatureDictionary, lb, ub, mainlb, mainub )
+        lb, ub = update_bounds(topKFeatureDictionary, lb, ub, mainlb, mainub)
 
         print(f"Updated bounds for next iteration: lb = {lb}, ub = {ub}")
     plot_combined_fitness(combined_best_fitness, n_gen)
 
+
 def update_bounds(feature_dict, lb, ub, main_lb, main_ub):
     for feature, value in feature_dict.items():
         if value < 0:  # Negative value: Increase lower bound by |value|%
-            increment = abs((value)/10 * lb[feature])
+            increment = abs((value) / 10 * lb[feature])
             new_lb = lb[feature] + increment
             # Check if the new lb exceeds the main upper bound
             if new_lb <= main_ub[feature] and new_lb > main_lb[feature]:
                 lb[feature] = new_lb
             # Otherwise, keep the old value
         elif value > 0:  # Positive value: Decrease upper bound by |value|%
-            decrement = (abs(value)/10) * ub[feature]
+            decrement = (abs(value) / 10) * ub[feature]
             new_ub = ub[feature] - decrement
             # Check if the new ub goes below the main lower bound
             if new_ub >= main_lb[feature] and new_ub <= main_ub[feature]:

@@ -2,7 +2,7 @@
 #processData takes a csvFilepath and returns top K fetaures with each of its corelation values
 #like {10: -0.7984056706826558, 11: -0.8026639073625494, 9: -0.8400600506535494}
 
-def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
+def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 1.csv'
     import numpy as np
     import pandas as pd
     from sklearn.model_selection import train_test_split
@@ -64,14 +64,14 @@ def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
     plt.xlabel('Feature Index')
     plt.ylabel('Correlation with Fitness')
     plt.title('Features vs-Fitness Correlation')
-    plt.savefig(os.path.join(output_directory, f"Features vs-Fitness Correlation.png"), dpi=300)
+    plt.savefig(os.path.join(output_directory, f"Features vs-Fitness Correlation{iteration}.png"), dpi=300)
     #plt.show()
     #%%
     plt.bar(range(num_features), class_correlations)
     plt.xlabel('Feature Index')
     plt.ylabel('Correlation with CV')
     plt.title('Features vs-CV Correlation')
-    plt.savefig(os.path.join(output_directory, f"Features vs-CV Correlation.png"), dpi=300)
+    plt.savefig(os.path.join(output_directory, f"Features vs-CV Correlation{iteration}.png"), dpi=300)
     #plt.show()
     #%%
     feature_names=[f'Feature_{i}' for i in range(X.shape[1])]
