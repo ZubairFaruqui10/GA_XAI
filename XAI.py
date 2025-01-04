@@ -338,4 +338,4 @@ def processData(csvPath, iteration, isUseConstraint, K): # '/home/zubair/Downloa
     # plt.show()
 
 
-processData('/home/zubair/Downloads/optimization_log 1.csv', 1, True, 3)
+# processData('/home/zubair/Downloads/optimization_log 1.csv', 1, True, 3)
