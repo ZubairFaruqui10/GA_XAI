@@ -2,7 +2,7 @@
 #processData takes a csvFilepath and returns top K fetaures with each of its corelation values
 #like {10: -0.7984056706826558, 11: -0.8026639073625494, 9: -0.8400600506535494}
 
-def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 1.csv'
+def processData(csvPath, iteration, isUseConstraint, K): # '/home/zubair/Downloads/optimization_log 1.csv'
     import numpy as np
     import pandas as pd
     from sklearn.model_selection import train_test_split
@@ -173,12 +173,12 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
             reg_lime_score = np.vstack((reg_lime_score, sortedByKey_reg_scores[1]))
 
         # for classify
-        #clas_scores = get_feature_importance_lime(limeClassifierExplainer, classifier, x)
-        #sortedByKey_clas_scores = sortAsLimeExpAsNumpyAr (clas_scores)
-        #if( class_lime_score is None):
-           # class_lime_score = sortedByKey_clas_scores
-        #else:
-           # class_lime_score = np.vstack((class_lime_score, sortedByKey_clas_scores[1]))
+        clas_scores = get_feature_importance_lime(limeClassifierExplainer, classifier, x)
+        sortedByKey_clas_scores = sortAsLimeExpAsNumpyAr (clas_scores)
+        if( class_lime_score is None):
+           class_lime_score = sortedByKey_clas_scores
+        else:
+           class_lime_score = np.vstack((class_lime_score, sortedByKey_clas_scores[1]))
     #%%
     def plotScores(features, reg_values, class_values, title):
         fig, ax = plt.subplots(1, 2, figsize=(50, 20))
@@ -231,20 +231,44 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
         return sorted_feature_avg_rank
 
     reg_ranks = findRankByFeature(reg_lime_score)
-    #class_ranks = findRankByFeature(class_lime_score)
+    class_ranks = findRankByFeature(class_lime_score)
 
     #plotScores(reg_ranks.keys(), reg_ranks.values(), class_ranks.values(), "Sort by Feature RANKs: Avg on all train data" )
     #%%
-    def findTopKFeatures(reg_ranks, k):
-        keys = [int( key.split("_")[-1]) for key in reg_ranks.keys()]
-        return keys[: k ]
-    topKFeatures = findTopKFeatures( reg_ranks, 3)
+    ans = None
+
+    def getSortedFeatures(featNameToScoreDict):
+        return [int(key.split("_")[-1]) for key in featNameToScoreDict.keys()]
+
+    def findTopKFeatures(sortedFeatures, k):
+        return sortedFeatures[: k]
+
+    sortedFitnessFeatures = getSortedFeatures(reg_ranks)
+    sortedConstraintFeatures = getSortedFeatures(class_ranks)
+    topKFitnessFeatures = findTopKFeatures(sortedFitnessFeatures, K)
+    topKConstraintFeatures = findTopKFeatures(sortedConstraintFeatures, K)
 
     def getFeatureNumberWithAdjustingParam(topKFeatures, reg_correlations):
         return {feature: reg_correlations[feature] for feature in topKFeatures}
 
-    ans = getFeatureNumberWithAdjustingParam(topKFeatures, reg_correlations)
-    print("\n\n\nTop 3 feature index with their correlational values are below. Pls increase or decrease feaure values accordingly.\n\n\n")
+    if (isUseConstraint):
+        topKFeaures = []  # to K fitness fetaures that do not appear in top k constraint features
+        sortedFitnessFeatures_index = 0;
+        topKFeauresSize = 0
+        while (topKFeauresSize < K and sortedFitnessFeatures_index < len(sortedFitnessFeatures)):
+            current_feature = sortedFitnessFeatures[sortedFitnessFeatures_index]
+            if (current_feature not in topKConstraintFeatures):  # not exists in top K constraints features too
+                topKFeaures.append(current_feature)
+                topKFeauresSize = topKFeauresSize + 1
+            sortedFitnessFeatures_index = sortedFitnessFeatures_index + 1
+
+        ans = getFeatureNumberWithAdjustingParam(topKFeaures, reg_correlations)
+
+    else:
+        ans = getFeatureNumberWithAdjustingParam(topKFitnessFeatures, reg_correlations)
+
+    print(
+        "\n\n\nTop 3 feature index with their correlational values are below. Pls increase or decrease feaure values accordingly.\n\n\n")
     print(ans)
     # returning top k features with corelation values. not proecessing the below shap codes
     return ans
@@ -314,3 +338,4 @@ def processData(csvPath, iteration): # '/home/zubair/Downloads/optimization_log 
     # plt.show()
 
 
+processData('/home/zubair/Downloads/optimization_log 1.csv', 1, True, 3)
