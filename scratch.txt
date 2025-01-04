@@ -1,0 +1,15 @@
+reg_ranks ={Feature_0: 7.6345, Feature_1: 7.6785, Feature_10: 4.3975, Feature_11: 4.4475, Feature_12: 7.7835, Feature_2: 7.7765, Feature_3: 7.785, Feature_4: 7.727, Feature_5: 7.866, Feature_6: 7.806, Feature_7: 7.796, Feature_8: 7.767, Feature_9: 4.535}
+
+class_ranks = {Feature_0: 7.5755, Feature_1: 7.223, Feature_10: 4.2365, Feature_11: 4.7725, Feature_12: 8.4255, Feature_2: 7.6265, Feature_3: 6.3945, Feature_4: 8.398, Feature_5: 7.8205, Feature_6: 8.2935, Feature_7: 7.933, Feature_8: 7.9295, Feature_9: 4.3715}
+
+[10, 11, 9, 0, 1, 4, 8, 2, 12, 3, 7, 6, 5]
+
+[10, 9, 11, 3, 1, 0, 2, 5, 8, 7, 6, 4, 12]
+
+
+{Feature_0: 7.67, Feature_1: 7.798, Feature_10: 4.4035, Feature_11: 4.461, Feature_12: 7.7195, Feature_2: 7.5955, Feature_3: 7.7685, Feature_4: 7.8365, Feature_5: 7.8795, Feature_6: 7.8245, Feature_7: 7.7365, Feature_8: 7.7915, Feature_9: 4.5155}
+
+{Feature_0: 7.5035, Feature_1: 7.228, Feature_10: 4.2615, Feature_11: 4.777, Feature_12: 8.3915, Feature_2: 7.6165, Feature_3: 6.456, Feature_4: 8.4325, Feature_5: 7.8075, Feature_6: 8.3605, Feature_7: 7.8625, Feature_8: 7.9615, Feature_9: 4.3415}
+
+[10, 11, 9, 2, 0, 12, 7, 3, 8, 1, 6, 4, 5]
+[10, 9, 11, 3, 1, 0, 2, 5, 7, 8, 6, 12, 4]

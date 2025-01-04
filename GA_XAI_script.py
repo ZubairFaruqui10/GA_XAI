@@ -2,7 +2,7 @@
 #processData takes a csvFilepath and returns top K fetaures with each of its corelation values
 #like {10: -0.7984056706826558, 11: -0.8026639073625494, 9: -0.8400600506535494}
 
-def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
+def processData(csvPath, isUseConstraint, K): # '/home/zubair/Downloads/optimization_log 1.csv'
     import numpy as np
     import pandas as pd
     from sklearn.model_selection import train_test_split
@@ -38,8 +38,8 @@ def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
 
     # Get the index of the row with the minimum value in Column A
     min_row_index = min_row.name
-    # print("min row index: ", min_row_index)
-    # print("min row: ", min_row)
+    print("min row index: ", min_row_index)
+    print("min row: ", min_row)
     # Get the corresponding 'Solution' value for the min row index
     min_row_solution_value = data.loc[min_row_index, 'Solution']
 
@@ -90,8 +90,8 @@ def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
     mse = mean_squared_error(y_test_reg, y_pred_reg)
     accuracy = accuracy_score(y_test_class, y_pred_class)
 
-    # print(f"Regression MSE: {mse}")
-    # print(f"Classification Accuracy: {accuracy}")
+    print(f"Regression MSE: {mse}")
+    print(f"Classification Accuracy: {accuracy}")
 
     #%%
     from lime import lime_tabular
@@ -197,7 +197,7 @@ def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
         ax[1].tick_params(axis='y', labelsize=20)  # Y-axis label font size
         plt.tight_layout()
         plt.savefig(os.path.join(output_directory, title), dpi=300)
-        #plt.show()
+        plt.show()
     #%%
     #Sort by Feature name: Feature Importance using LIME for Best solution
     # score_reg = sortAsLimeExpAsNumpyAr(best_sol_score_reg)
@@ -234,15 +234,39 @@ def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
 
     plotScores(reg_ranks.keys(), reg_ranks.values(), class_ranks.values(), "Sort by Feature RANKs: Avg on all train data" )
     #%%
-    def findTopKFeatures(reg_ranks, k):
-        keys = [int( key.split("_")[-1]) for key in reg_ranks.keys()]
-        return keys[: k ]
-    topKFeatures = findTopKFeatures( reg_ranks, 3)
+
+    ans = None
+
+    def getSortedFeatures(featNameToScoreDict):
+        return [int(key.split("_")[-1]) for key in featNameToScoreDict.keys()]
+
+    def findTopKFeatures(sortedFeatures, k):
+        return sortedFeatures[: k]
+
+    sortedFitnessFeatures = getSortedFeatures(reg_ranks)
+    sortedConstraintFeatures = getSortedFeatures(class_ranks)
+    topKFitnessFeatures = findTopKFeatures(sortedFitnessFeatures, K)
+    topKConstraintFeatures = findTopKFeatures(sortedConstraintFeatures, K)
 
     def getFeatureNumberWithAdjustingParam(topKFeatures, reg_correlations):
         return {feature: reg_correlations[feature] for feature in topKFeatures}
 
-    ans = getFeatureNumberWithAdjustingParam(topKFeatures, reg_correlations)
+    if (isUseConstraint):
+        topKFeaures = []  # to K fitness fetaures that do not appear in top k constraint features
+        sortedFitnessFeatures_index = 0;
+        topKFeauresSize = 0
+        while (topKFeauresSize < K and sortedFitnessFeatures_index < len(sortedFitnessFeatures)):
+            current_feature = sortedFitnessFeatures[sortedFitnessFeatures_index]
+            if (current_feature not in topKConstraintFeatures):  # not exists in top K constraints features too
+                topKFeaures.append(current_feature)
+                topKFeauresSize = topKFeauresSize + 1
+            sortedFitnessFeatures_index = sortedFitnessFeatures_index + 1
+
+        ans = getFeatureNumberWithAdjustingParam(topKFeaures, reg_correlations)
+
+    else:
+        ans = getFeatureNumberWithAdjustingParam(topKFitnessFeatures, reg_correlations)
+
     print("\n\n\nTop 3 feature index with their correlational values are below. Pls increase or decrease feaure values accordingly.\n\n\n")
     print(ans)
     # returning top k features with corelation values. not proecessing the below shap codes
@@ -316,4 +340,4 @@ def processData(csvPath): # '/home/zubair/Downloads/optimization_log 1.csv'
 
 
 
-processData('/home/zubair/Downloads/optimization_log 1.csv')
+processData('/home/zubair/Downloads/optimization_log 1.csv', True, 3)
