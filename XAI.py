@@ -115,11 +115,11 @@ def processData(csvPath, iteration, isUseConstraint, K): # '/home/zubair/Downloa
     def get_feature_importance_lime(explainer, model, X_sample):
         if explainer.mode == 'regression':
             exp = explainer.explain_instance(X_sample, model.predict, num_features=X.shape[1])
+            return dict(exp.as_list())
 
         elif explainer.mode == 'classification':
-            exp = explainer.explain_instance(X_sample, model.predict_proba, num_features=X.shape[1])
-        # print(exp.as_list())
-        return dict(exp.as_list())
+            exp = explainer.explain_instance(X_sample, model.predict_proba, num_features=X.shape[1], labels=[0, 1])
+            return dict(exp.as_list(label=1))
     #%%
     # Test with a sample and store importance scores
     #sample = X_test[0]
