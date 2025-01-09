@@ -64,14 +64,14 @@ def processData(csvPath, isUseConstraint, K): # '/home/zubair/Downloads/optimiza
     plt.ylabel('Correlation with Fitness')
     plt.title('Features vs-Fitness Correlation')
     plt.savefig(os.path.join(output_directory, f"Features vs-Fitness Correlation.png"), dpi=300)
-    #plt.show()
+    plt.show()
     #%%
     plt.bar(range(num_features), class_correlations)
     plt.xlabel('Feature Index')
     plt.ylabel('Correlation with CV')
     plt.title('Features vs-CV Correlation')
     plt.savefig(os.path.join(output_directory, f"Features vs-CV Correlation.png"), dpi=300)
-    #plt.show()
+    plt.show()
     #%%
     feature_names=[f'Feature_{i}' for i in range(X.shape[1])]
     # Initialize models
@@ -114,11 +114,12 @@ def processData(csvPath, isUseConstraint, K): # '/home/zubair/Downloads/optimiza
     def get_feature_importance_lime(explainer, model, X_sample):
         if explainer.mode == 'regression':
             exp = explainer.explain_instance(X_sample, model.predict, num_features=X.shape[1])
+            return dict(exp.as_list())
 
         elif explainer.mode == 'classification':
-            exp = explainer.explain_instance(X_sample, model.predict_proba, num_features=X.shape[1])
-        # print(exp.as_list())
-        return dict(exp.as_list())
+            exp = explainer.explain_instance(X_sample, model.predict_proba, num_features=X.shape[1], labels=[0, 1])
+            # print(exp.as_list())
+            return dict(exp.as_list(label=1))
     #%%
     # Test with a sample and store importance scores
     #sample = X_test[0]
